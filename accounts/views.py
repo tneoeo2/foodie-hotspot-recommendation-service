@@ -27,44 +27,7 @@ class UserDetailsView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
 
-    def get_object(self):
-        return self.request.user
-    
-    def get_queryset(self,data):
-        """
-        Adding this method since it is sometimes called when using
-        django-rest-swagger
-        """
-        instance = get_object_or_404(get_user_model(), id=data['user_id'])
-        
-        return instance
-    
-    """
-    Concrete view for retrieving, updating a model instance.
-    """
-    def get(self, request, *args, **kwargs):
-        
+    def get_object(self, request):
         token_str = request.headers.get("Authorization").split(' ')[1]
         data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
-        
-        instance = self.get_queryset(data)
-        
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        
-        token_str = request.headers.get("Authorization").split(' ')[1]
-        data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
-        
-        instance = self.get_queryset(data)
-        
-        return self.update(request, *args, **kwargs)
-
-    def patch(self, request, *args, **kwargs):
-        
-        token_str = request.headers.get("Authorization").split(' ')[1]
-        data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
-        
-        instance = self.get_queryset(data)
-        
-        return self.partial_update(request, *args, **kwargs)
+        return data['user_id']
