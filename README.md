@@ -94,7 +94,7 @@
 
 데이터 베이스: ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?&logo=mysql&logoColor=white)
 
-<!-- 배포 : ![배포](https://img.shields.io/badge/%EB%B0%B0%ED%8F%AC-None-gray) -->
+배포 : ![배포](https://img.shields.io/badge/%EB%B0%B0%ED%8F%AC-None-gray)
 
 <br>
 
