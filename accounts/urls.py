@@ -4,5 +4,5 @@ from accounts import views
 app_name = "accounts"
 
 urlpatterns =[
-    path("", views.SearchPostsList.as_view()),
+    # path("", views.List.as_view()),
 ]
