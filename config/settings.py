@@ -41,6 +41,20 @@ CUSTOM_APPS = [
 
 INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 액세스 토큰의 수명
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),  # 갱신토큰의 갱신수명
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=1),  # 갱신토큰의 수명
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
