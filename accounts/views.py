@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from .app_settings import api_settings
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from  .serializers import UserDetailUpdateSerializers
 from django.shortcuts import get_object_or_404
