@@ -45,7 +45,7 @@ class Restaurant(models.Model):
         
 
 class Rate(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL)
-    restaurant = models.ForeignKey('Restaurants', on_delete=models.CASCADE)
-    score = models.IntegerField(default=0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],decimal_places=2)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    score = models.DecimalField(default=0,max_digits=2, decimal_places=2, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
     content =models.CharField(max_length=255)

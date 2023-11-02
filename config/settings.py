@@ -2,10 +2,16 @@ from pathlib import Path
 import os
 import environ
 from datetime import timedelta
+from utils.custom_logger import CustomLogger
+from apscheduler.schedulers.background import BackgroundScheduler
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, True))
+log_level = "DEBUG"
+logger = CustomLogger(level=log_level).get_logger()
+
+CUSTOM_LOGGER = logger
 
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
@@ -31,7 +37,11 @@ THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
     "corsheaders",  # CORS
     "drf_yasg",  # swagger
+    'django_apscheduler',
     ]
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
+SCHEDULER_DEFAULT = True
 
 CUSTOM_APPS = [
     "accounts.apps.AccountsConfig",
@@ -133,6 +143,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {    #Logging 기본 세팅 
+    'version': 1, 
+    'disable_existing_loggers': False, 
+    'handlers': { 
+        'file': { 
+            'level': 'DEBUG', 
+            'class': 'logging.FileHandler', 
+            'filename': 'debug.log',  #로그 파일명
+        }, 
+    }, 
+    'loggers': { 
+        'django': { 
+            'handlers': ['file'], 
+            'level': log_level, #레벨
+            'propagate': True, 
+        }, 
+    }, 
+}
+
+
 
 # Internationalization
 LANGUAGE_CODE = "ko-kr"
@@ -159,3 +189,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Customizing User model
 AUTH_USER_MODEL = "accounts.User"
+
+
