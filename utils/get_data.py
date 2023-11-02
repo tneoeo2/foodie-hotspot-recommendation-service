@@ -124,8 +124,9 @@ try:
                     page_index += 1
                     new_data.append(get_mapping_data(raw_data[API_URL[key].split('/')[-1]]['row'], DB_FIELD)) #? 데이터 매핑
             except Exception as e:
-                logging.error(f'API 요청 실패 --- {status}\n {e}')
+                logging.error(f'API 요청 실패 --- {raw_data}\n {e}')
                 logging.info(f'time_check: {time.time()-start_time2}')
+                raise Exception('API 요청 실패 : 에러 코드를  확인하세요')
                 # status = raw_data['RESULT']['CODE']   #* 에러코드 반환시 형식
                 # status_code = status.split('-')[-1]
                 # if status_code != '000' :
