@@ -1,7 +1,4 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from django.conf import settings
-logger = settings.CUSTOM_LOGGER
-
 
 scheduler = BackgroundScheduler()
 

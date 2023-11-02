@@ -89,7 +89,8 @@ def get_mapping_data(raw_data:dict, field:dict) -> dict:
     result_dict = {}
     logger.debug(f'raw_data : {raw_data}')
     if type(raw_data) != list:
-        tmp = copy.deepcopy(result_dict)
+        # tmp = copy.deepcopy(result_dict)
+        tmp = result_dict.copy()
         for key, value in raw_data.items():
             new_key = field[key]  
             tmp[new_key] = value
@@ -97,7 +98,8 @@ def get_mapping_data(raw_data:dict, field:dict) -> dict:
     else: 
     # 기존 데이터의 키를 DB_FIELD 딕셔너리를 참조하여 교체
         for el in raw_data:
-            tmp = copy.deepcopy(result_dict)
+            # tmp = copy.deepcopy(result_dict)
+            tmp = result_dict.copy()
             for key, value in el.items():
                 new_key = field[key]  
                 tmp[new_key] = value
@@ -128,7 +130,7 @@ def processing_data(page_index:int=1, page_size:int=500, total:int=None)->dict: 
             logger.info(f'----------{key} : {API_URL[key]} API 요청 시작----------')
             
             while unprocessed_data > 0 or unprocessed_data == -1:
-                raw_data = get_restaurant(API_URL[key], API_KEY, page_index,  page_size)  #? API 요청
+                raw_data = get_restaurant(API_URL[key], API_KEY, pindex,  psize)  #? API 요청
                 try:
                     status = raw_data[API_URL[key].split('/')[-1]]['head']['RESULT']['CODE'] #* CODE:INFO-000시 정상, 그 외 API 요청 실패처리 
                     status_code = status.split('-')[-1]
