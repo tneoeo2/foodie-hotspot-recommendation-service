@@ -70,7 +70,7 @@ def get_restaurant(api_url, api_key, page_index:int, page_size:int)->dict:   # A
         jsondata = json.dumps(xmltodict.parse(root), indent=4)
         
         dict = json.loads(jsondata)
-        # logging.debug("dict: ", dict)
+        # logging.debug(f"dict: {dict}")
         
 
     return dict
@@ -103,7 +103,7 @@ try:
      
     for key in API_URL.keys(): # 모든 url에 요청
         start_time2 = time.time()
-        unprocessed_data = -1 #전체 데이터 숫자 확인용
+        unprocessed_data = -1 #남은 데이터 숫자 확인용
         #* 아래 두 변수는 필요에 따라 수정하여 사용합니다.
         page_index = 1  # 페이지 번호
         page_size = 1000  # 페이지에 담긴 정보 수 
