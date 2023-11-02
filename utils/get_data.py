@@ -58,7 +58,7 @@ def get_restaurant(api_url, api_key, page_index:int, page_size:int)->dict:   # A
     params = {
         "Key": api_key,
         "pIndex" : page_index,
-        "pSize": str(page_size),
+        "pSize": page_size,
     }
 
     # API 요청 보내기
