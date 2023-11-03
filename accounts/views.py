@@ -2,6 +2,12 @@ import requests
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
+from .models import User
+from django.shortcuts import get_object_or_404
+import requests
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
@@ -9,6 +15,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from accounts.serializers import UserDetailUpdateSerializers, LocationSerializers
 from accounts.models import Location
+
 
 import jwt 
 SECRET_KEY = settings.SECRET_KEY
@@ -26,13 +33,19 @@ class UserDetailsView(RetrieveUpdateAPIView):
     Returns UserModel fields.
     """
     serializer_class = UserDetailUpdateSerializers
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
+		
+    # JWT 인증방식 클래스 지정하기
+    authentication_classes = [JWTAuthentication]
 
 
     def get_object(self, request):
         token_str = request.headers.get("Authorization").split(' ')[1]
         data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
-        return data['user_id']
+        obj = get_object_or_404(User, id=data['user_id'])
+        return obj
+    
+
 
 
 class LocationListView(ListAPIView):
@@ -57,3 +70,4 @@ class LocationListView(ListAPIView):
             queryset = queryset.filter(sgg=sgg)
         
         return queryset
+
