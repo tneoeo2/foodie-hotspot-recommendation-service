@@ -4,5 +4,5 @@ from foodiehotspots import views
 app_name = "foodiehotspots"
 
 urlpatterns =[
-    # path("", views.List.as_view()),
+    path("", views.RestaurantList.as_view()),
 ]
