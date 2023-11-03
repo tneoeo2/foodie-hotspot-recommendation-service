@@ -1,9 +1,33 @@
 from django.conf import settings
 from rest_framework import serializers
 from foodiehotspots.models import Restaurant
+from .models import Restaurant, Rate
+from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField, SerializerMethodField
+
 
 logger = settings.CUSTOM_LOGGER
 
+
+class EvalCreateSerializers(ModelSerializer):
+    model = Rate
+    field = ['score', 'content']
+    
+class FoodieDetailsSerializers(ModelSerializer):
+
+    related_eval_ids = SerializerMethodField()
+    
+    
+    def get_related_eval_ids(self, obj):
+        # 해당 company_id로 지원한 지원공고인 recruit_id를 리스트로 반환
+        related_evals = Rate.objects.filter(restaurant=obj.id).order_by('-created_at')
+        #value_list를 사용하면 object에서 지정해준 field값을 tuple형태로 return 해줍니다.
+        evals_ids = related_evals.values_list('score','content')
+        return evals_ids
+    
+    class Meta:
+        model = Restaurant
+        fields = '__all__'
+        
 class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
     class Meta():
         model = Restaurant
@@ -31,9 +55,7 @@ class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
         self.set_name_address(validated_data)
         restaurant = Restaurant(**validated_data)
         restaurant.save()
-        # restaurant, created = Restaurant.objects.get_or_create(name_address=validated_data['name_address'], defaults=validated_data)
-        # logger.info(f'created : {created}')   #false면 기존에 있던데이터
-        
+
         return restaurant
     
     def update(self, instance, validated_data):
@@ -58,3 +80,4 @@ class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
             logger.debug(f'변경된 필드 : {changed_fields}, 개수 : {len(changed_fields)} ')
             
         return IS_CHANGED
+        

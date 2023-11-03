@@ -1,6 +1,5 @@
 import time
 import json
-# import copy
 import requests
 import environ
 import xmltodict
@@ -74,7 +73,7 @@ def get_restaurant(api_url, api_key, page_index:int, page_size:int)->dict:   # A
         
         jsondict = json.loads(jsondata)
         # logger.debug(f"jsondict: {jsondict}")
-        
+
 
     return jsondict
 
@@ -88,6 +87,7 @@ def get_mapping_data(raw_data:dict, field:dict) -> dict:
     result_list = []
     result_dict = {}
     # logger.debug(f'raw_data : {raw_data}')
+
     if type(raw_data) != list:
         # tmp = copy.deepcopy(result_dict)
         tmp = result_dict.copy()
