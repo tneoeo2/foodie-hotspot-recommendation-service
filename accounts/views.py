@@ -1,14 +1,21 @@
-from django.shortcuts import render
-from rest_framework.generics import RetrieveUpdateAPIView
+import requests
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from .models import User
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from  .serializers import UserDetailUpdateSerializers
 
+from .models import User
 from django.shortcuts import get_object_or_404
 import requests
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from django.shortcuts import render
+from django.shortcuts import get_object_or_404
+from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from accounts.serializers import UserDetailUpdateSerializers, LocationSerializers
+from accounts.models import Location
+
 
 import jwt 
 SECRET_KEY = settings.SECRET_KEY
@@ -38,3 +45,29 @@ class UserDetailsView(RetrieveUpdateAPIView):
         obj = get_object_or_404(User, id=data['user_id'])
         return obj
     
+
+
+
+class LocationListView(ListAPIView):
+    permission_classes = [AllowAny]
+    # permission_classes = [IsAuthenticated]
+    
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+    
+    def get_queryset(self):
+        queryset = Location.objects.all()
+        query_params = self.request.query_params
+        if not query_params:
+            return queryset
+        
+        do_si = query_params.get("do_si", None)
+        if do_si:
+            queryset = queryset.filter(dosi=do_si)
+        
+        sgg = query_params.get("sgg", None)
+        if sgg:
+            queryset = queryset.filter(sgg=sgg)
+        
+        return queryset
+
