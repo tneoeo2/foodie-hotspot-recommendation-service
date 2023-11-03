@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from .models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from  .serializers import UserDetailUpdateSerializers
+
 from django.shortcuts import get_object_or_404
 import requests
 from rest_framework_simplejwt.authentication import JWTAuthentication
