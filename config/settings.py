@@ -3,7 +3,6 @@ import os
 import environ
 from datetime import timedelta
 from utils.custom_logger import CustomLogger
-from apscheduler.schedulers.background import BackgroundScheduler
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,7 +40,7 @@ THIRD_PARTY_APPS = [
     ]
 
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
-SCHEDULER_DEFAULT = True
+SCHEDULER_DEFAULT = True   #서버 올라가면 자동실행
 
 CUSTOM_APPS = [
     "accounts.apps.AccountsConfig",
