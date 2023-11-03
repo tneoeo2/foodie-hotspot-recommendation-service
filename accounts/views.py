@@ -1,16 +1,19 @@
 import requests
+import jwt 
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from accounts.serializers import UserDetailUpdateSerializers, LocationSerializers
 from accounts.models import Location
+from utils.location import location_load
 
-import jwt 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = 'HS256'
 # Create your views here.
@@ -57,3 +60,13 @@ class LocationListView(ListAPIView):
             queryset = queryset.filter(sgg=sgg)
         
         return queryset
+
+
+class testAPI(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        # location_load.load_to_db()
+        
+        return Response({"message": "this is testAPI"})
+        
