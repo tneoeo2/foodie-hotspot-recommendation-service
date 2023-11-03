@@ -7,8 +7,8 @@ User = get_user_model()
 
 class Restaurant(models.Model):
     # OPEN API
-    sgg = models.CharField(max_length=100) # 시군구명
-    sgg_code = models.CharField(max_length=100, null=True, blank=True) # 시군구 코드
+    sgg = models.CharField(max_length=50) # 시군구명
+    sgg_code = models.CharField(max_length=205, null=True, blank=True) # 시군구 코드
     name = models.CharField(max_length=100) # 상호명
     start_date = models.CharField(max_length=100, null=True, blank=True) # 영업시작일
     business_state = models.CharField(max_length=100, null=True, blank=True) # 영업상태
@@ -31,7 +31,7 @@ class Restaurant(models.Model):
     longitude = models.CharField(max_length=100) # 경도
     latitude = models.CharField(max_length=100) # 위도
     
-    name_address = models.CharField(max_length=300, unique=True) # name + address_roadnm
+    name_address = models.CharField(max_length=255, unique=True) # name + address_roadnm
     score = models.FloatField(default=0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])# 평가점수
     
     def save(self, *args, **kwagrs):
