@@ -3,7 +3,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 from django.db import models
 from apscheduler.triggers.cron import CronTrigger
-from foodiehotspots.views import RestaurantScheduler
+from foodiehotspots.views import RestaurantScheduler, DiscordWebHooks
 import time
 
 scheduler = None #스케줄러 전역 변수로 설정
@@ -20,3 +20,9 @@ def start():
     # scheduler.add_job(job1, 'cron',minutes='0',misfire_grace_time=wait_time) #!매분 실행으로 테스트
     scheduler.start()
     
+def schedule_process():
+    scheduler = BackgroundScheduler()
+    job2 = partial(DiscordWebHooks.food_list, DiscordWebHooks())
+    #점심시간 30분전 식당 추천
+    scheduler.add_job(job2, 'cron', hour=11, minute=30)
+    scheduler.start()
