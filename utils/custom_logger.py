@@ -38,6 +38,5 @@ class CustomLogger:
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-        logger.info("server start!")
         
         return logger

@@ -82,5 +82,5 @@ class testAPI(APIView):
         # location_load.load_to_db()
         
         return Response({"message": "this is testAPI"})
-        
 
+ 

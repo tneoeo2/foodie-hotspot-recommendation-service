@@ -1,11 +1,11 @@
 import csv
 import get_data
 
-new_data_list = get_data.processing_data(page_index=1, page_size=5, total=20)
+new_data_list = get_data.processing_data(page_index=1, page_size=10, total=50)
 # new_data_list = get_data.processing_data()
 # print(new_data_list)
 
-with open("dummy_restaurant.csv", 'w') as file:
+with open("dummy_restaurant.csv", 'w', encoding='utf-8') as file:
     header = list(get_data.DB_FIELD.values())
     writer = csv.DictWriter(file, fieldnames=header)
     writer.writeheader()
