@@ -1,11 +1,19 @@
 import math
 
-from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ParseError
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework import status
 
 from foodiehotspots.models import Restaurant
 from foodiehotspots.serializers import RestaurantSerializer
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
 
 
 class RestaurantList(ListAPIView):
@@ -16,12 +24,12 @@ class RestaurantList(ListAPIView):
     permissions_classes = [AllowAny]
 
     serializer_class = RestaurantSerializer
-    # pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         lat = self.request.query_params.get('lat')
         lon = self.request.query_params.get('lon')
-        radius = self.request.query_params.get('radius', 1.0)
+        radius = self.request.query_params.get('radius', 1.1)
         sorting = self.request.query_params.get('sorting', 'distance')  # 'distance' or 'score'
 
         user_point = (float(lat), float(lon))
@@ -38,41 +46,45 @@ class RestaurantList(ListAPIView):
                 within_radius.append((distance, r))
         print(within_radius)
 
+        sorted_restaurants = []
+
         try:
             for i in range(len(within_radius)):
                 distance, r = within_radius[i]
+                sorted_restaurants.append({"distance": distance, "restaurant_id": r.id})
         except IndexError:
             # 예외 처리 로직 추가
-            print("인덱스가 범위를 벗어났습니다.")
+            raise ValueError(detail="인덱스가 범위를 벗어났습니다.")
 
         # 거리 순 정렬
         if sorting == 'distance':
             within_radius.sort(key=lambda x: x[0])
-            sorted_distance_restaurant = [r[1] for r in within_radius]
-
-            print("레스토랑을 거리 순으로 정렬했습니다:")
-            for restaurant in sorted_distance_restaurant:
-                print(f"레스토랑 ID: {restaurant.id}, 거리: {within_radius[restaurant.id-1][0]} km")
-
-            return sorted_distance_restaurant
+            sorted_restaurant = [r[1] for r in within_radius]  # sorted_distance_restaurant
         
         # score 내림차순 정렬
         elif sorting == 'score':
             within_radius.sort(key=lambda x: x[1].score, reverse=True)
-            sorted_score_restaurant = [r[1] for r in within_radius]
-
-            print("레스토랑을 평점(score) 순으로 내림차순 정렬했습니다:")
-            for restaurant in sorted_score_restaurant:
-                print(f"레스토랑 ID: {restaurant.id}, 평점(score): {restaurant.score}")
-
-            return sorted_score_restaurant
+            sorted_restaurant = [r[1] for r in within_radius]  # sorted_score_restaurant
         else:
             raise ParseError()
         
-    # def get_serializer_context(self):
-    #     context = super().get_serializer_context()
-    #     context['user_point'] = self.user_point  # 사용자 중심점을 serializer에 전달
-    #     return self.serializer_class(context=context)
+        return sorted_restaurant
+
+        # serializer = RestaurantSerializer(sorted_restaurant, many=True)
+        # return Response(
+        #     serializer.data,
+        #     status=status.HTTP_200_OK,
+        # )
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 def lat_lon_to_km(point_1, point_2):
