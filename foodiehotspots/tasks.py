@@ -17,7 +17,7 @@ def start():
     wait_time = 1000
     job1 = partial(RestaurantScheduler.restaurant_scheduler, RestaurantScheduler())
     # job2 = partial(RestaurantScheduler.save, RestaurantScheduler())
-    # scheduler.add_job(job1, 'cron',hour=2,misfire_grace_time=wait_time) 
+    # scheduler.add_job(job1, 'cron',hour=2,misfire_grace_time=wait_time)  # 2시 실행(default)
     scheduler.add_job(job1, 'cron', minute='*',misfire_grace_time=wait_time) #!매분 실행으로 테스트
     scheduler.start()
     

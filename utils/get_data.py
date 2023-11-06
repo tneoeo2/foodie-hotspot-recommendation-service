@@ -1,6 +1,6 @@
 import time
 import json
-# import copy
+import logging
 import requests
 import environ
 import xmltodict
@@ -8,7 +8,8 @@ from django.conf import settings
 # from custom_logger import CustomLogger
 
 # logger = CustomLogger("INFO").get_logger()  # 테스트용 추후변경
-logger = settings.CUSTOM_LOGGER
+# logger = settings.CUSTOM_LOGGER
+logger = logging.getLogger(__name__)
 
 env = environ.Env(DEBUG=(bool, True))
 

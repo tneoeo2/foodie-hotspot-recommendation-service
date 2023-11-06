@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from  .serializers import UserDetailUpdateSerializers
 from django.shortcuts import get_object_or_404
 import requests
-
+import logging
 import jwt 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = 'HS256'
@@ -24,8 +24,6 @@ class UserDetailsView(RetrieveUpdateAPIView):
     """
     serializer_class = UserDetailUpdateSerializers
     permission_classes = (IsAuthenticated,)
-
-
     def get_object(self, request):
         token_str = request.headers.get("Authorization").split(' ')[1]
         data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
