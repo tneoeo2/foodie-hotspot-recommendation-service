@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from accounts.models import Location
 
+from accounts.models import Location
 
 class UserDetailUpdateSerializers(serializers.ModelSerializer):
     class Meta():
