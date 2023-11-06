@@ -34,7 +34,7 @@ DB_FIELD = {   # DB 필드명 매핑용
   ,'REFINE_LOTNO_ADDR'          :       'address_lotno'        
   ,'REFINE_ROADNM_ADDR'         :       'address_roadnm'       
   ,'REFINE_ZIP_CD'              :       'zip_code'             
-  ,'REFINE_WGS84_LOGT'          :       'logitude'             
+  ,'REFINE_WGS84_LOGT'          :       'longitude'             
   ,'REFINE_WGS84_LAT'           :       'latitude'             
      
 }
