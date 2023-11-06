@@ -1,17 +1,34 @@
-from django.conf import settings
-from rest_framework import serializers
-from foodiehotspots.models import Restaurant
-from .models import Restaurant, Rate
-from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField, SerializerMethodField
+
 import jwt
 from config import settings
+
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
+from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField, SerializerMethodField
+
+from foodiehotspots.models import Restaurant, Rate
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = 'HS256'
 
-
 logger = settings.CUSTOM_LOGGER
+
+
+class RestaurantSerializer(ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = (
+            'id',
+            'longitude', 
+            'latitude', 
+            'score'
+        )
+    
+    def validate_score(self, value):
+        if value < 0 or value > 5:
+            raise serializers.ValidationError("평점(score)은 0에서 5 사이어야 합니다.")
+        return value
 
 
 class EvalCreateSerializers(ModelSerializer):
@@ -130,4 +147,3 @@ class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
             logger.debug(f'변경된 필드 : {changed_fields}, 개수 : {len(changed_fields)} ')
             
         return IS_CHANGED
-        
