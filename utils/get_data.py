@@ -1,14 +1,13 @@
 import time
 import json
-#import copy
 import requests
 import environ
 import xmltodict
-# from django.conf import settings
-from custom_logger import CustomLogger
+from django.conf import settings
+# from custom_logger import CustomLogger
 
-logger = CustomLogger("INFO").get_logger()  # 테스트용 추후변경
-# logger = settings.CUSTOM_LOGGER
+# logger = CustomLogger("INFO").get_logger()  # 테스트용 추후변경
+logger = settings.CUSTOM_LOGGER
 
 env = environ.Env(DEBUG=(bool, True))
 
@@ -34,7 +33,7 @@ DB_FIELD = {   # DB 필드명 매핑용
   ,'REFINE_LOTNO_ADDR'          :       'address_lotno'        
   ,'REFINE_ROADNM_ADDR'         :       'address_roadnm'       
   ,'REFINE_ZIP_CD'              :       'zip_code'             
-  ,'REFINE_WGS84_LOGT'          :       'logitude'             
+  ,'REFINE_WGS84_LOGT'          :       'longitude'             
   ,'REFINE_WGS84_LAT'           :       'latitude'             
      
 }
@@ -73,8 +72,8 @@ def get_restaurant(api_url, api_key, page_index:int, page_size:int)->dict:   # A
         jsondata = json.dumps(xmltodict.parse(root), indent=4)
         
         jsondict = json.loads(jsondata)
-        logger.debug(f"jsondict: {jsondict}")
-        
+        # logger.debug(f"jsondict: {jsondict}")
+
 
     return jsondict
 
@@ -87,7 +86,8 @@ def get_mapping_data(raw_data:dict, field:dict) -> dict:
     '''
     result_list = []
     result_dict = {}
-    logger.debug(f'raw_data : {raw_data}')
+    # logger.debug(f'raw_data : {raw_data}')
+
     if type(raw_data) != list:
         # tmp = copy.deepcopy(result_dict)
         tmp = result_dict.copy()
