@@ -8,7 +8,7 @@ from .models import User
 from django.shortcuts import get_object_or_404
 import requests
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from django.db.models.query import prefetch_related_objects
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -40,7 +40,7 @@ class UserDetailsView(RetrieveUpdateAPIView):
 		
     # JWT 인증방식 클래스 지정하기
     authentication_classes = [JWTAuthentication]
-
+    queryset = User.objects.all()
 
     def get_object(self, request):
         token_str = request.headers.get("Authorization").split(' ')[1]
@@ -48,6 +48,28 @@ class UserDetailsView(RetrieveUpdateAPIView):
         obj = get_object_or_404(User, id=data['user_id'])
         return obj
     
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object(request)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object(request)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        queryset = self.filter_queryset(self.get_queryset())
+        if queryset._prefetch_related_lookups:
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance,
+            # and then re-prefetch related objects
+            instance._prefetched_objects_cache = {}
+            prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
+
+        return Response(serializer.data)
+
 
 
 
