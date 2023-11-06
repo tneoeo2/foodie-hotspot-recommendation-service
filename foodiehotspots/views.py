@@ -1,16 +1,18 @@
-from django.shortcuts import render, get_object_or_404
-from .serializers import FoodieDetailsSerializers, EvalCreateSerializers
-from .models import Restaurant, Rate
-from rest_framework import mixins
-from rest_framework.generics import GenericAPIView
 import jwt
+
+from django.shortcuts import render, get_object_or_404
+
+from rest_framework import mixins, status
+from rest_framework.generics import GenericAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
-from utils.get_data import processing_data
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from  .serializers import RestaurantInfoUpdateSerializers
+
+from .serializers import FoodieDetailsSerializers, EvalCreateSerializers
+from .models import Restaurant, Rate
+from .serializers import RestaurantInfoUpdateSerializers
+from utils.get_data import processing_data
+
 from config import settings
 
 logger = settings.CUSTOM_LOGGER
@@ -53,7 +55,7 @@ class FoodieDetailsView(mixins.RetrieveModelMixin,
 
 class EvalCreateView(mixins.CreateModelMixin,
                       GenericAPIView):
-    serializers = EvalCreateSerializers
+    serializer_class = EvalCreateSerializers
     permission_classes = [IsAuthenticated]
 		
     # JWT 인증방식 클래스 지정하기
@@ -61,12 +63,29 @@ class EvalCreateView(mixins.CreateModelMixin,
     
     
     #1. 현재 음식점의 obj를 불러와 해당 score을 업데이트
+    def create(self, request, *args, **kwargs):
+        
+        # 평가 가 생성되면, 해당 맛집의 평점 을 업데이트 한다.
+        # 평균 계산하여 업데이트
+        pk = self.kwargs.get('pk')
+        instance = get_object_or_404(Restaurant, id=pk)
+        instance.score = (instance.score + int(request.data.get('score'))) / 2
+        instance.save()
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    
+    #2. 함께 들어온 'score'와 'content'가 user_id와 content_id가 같이 들어가야함
     def get_object(self, request):
         token_str = request.headers.get("Authorization").split(' ')[1]
         data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
         obj = get_object_or_404(Rate, user=data['user_id'])
         return obj
-    #2. 함께 들어온 'score'와 'content'가 user_id와 content_id가 같이 들어가야함 
+    
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
