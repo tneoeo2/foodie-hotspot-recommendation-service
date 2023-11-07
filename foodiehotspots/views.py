@@ -51,7 +51,7 @@ class RestaurantList(ListAPIView):
         for r in all_restaurants:
             restaurant_point = (float(r.longitude), float(r.latitude))
             distance = lat_lon_to_km(user_point, restaurant_point)
-            if distance <= radius:
+            if distance <= float(radius):
                 within_radius.append((distance, r))
 
         sorted_restaurants = []
