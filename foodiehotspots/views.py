@@ -109,12 +109,14 @@ def lat_lon_to_km(point_1, point_2):
     return R * c
 
 
-class FoodieDetailsView(mixins.RetrieveModelMixin,
-                        mixins.UpdateModelMixin,
-                        mixins.DestroyModelMixin,
-                            GenericAPIView):
-    serializer_class = FoodieDetailsSerializers
+class FoodieDetailsView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    GenericAPIView
+):
     permission_classes = [IsAuthenticated]
+    serializer_class = FoodieDetailsSerializers
 		
     # JWT 인증방식 클래스 지정하기
     authentication_classes = [JWTAuthentication]
@@ -141,10 +143,12 @@ class FoodieDetailsView(mixins.RetrieveModelMixin,
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
-class EvalCreateView(mixins.CreateModelMixin,
-                      GenericAPIView):
-    serializer_class = EvalCreateSerializers
+class EvalCreateView(
+    mixins.CreateModelMixin,
+    GenericAPIView
+):
     permission_classes = [IsAuthenticated]
+    serializer_class = EvalCreateSerializers
 		
     # JWT 인증방식 클래스 지정하기
     authentication_classes = [JWTAuthentication]

@@ -7,8 +7,8 @@ from utils.custom_logger import CustomLogger
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, True))
-log_level = "DEBUG"
-logger = CustomLogger(level=log_level).get_logger()
+LOG_LEVEL = "DEBUG"
+logger = CustomLogger(level=LOG_LEVEL).get_logger()
 
 CUSTOM_LOGGER = logger
 
@@ -128,6 +128,23 @@ else:
     }
 
 
+CACHE_TTL = 30  # Time to live
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        # 'BACKEND': 'django.core.cache.backends.cache.CacheClass',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis 서버 주소 및 포트
+        # 'OPTIONS': {
+        #     'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        # }
+    }
+}
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_CACHE_ALIAS = "default"
+
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -153,16 +170,27 @@ LOGGING = {    #Logging 기본 세팅
             'class': 'logging.FileHandler', 
             'filename': 'debug.log',  #로그 파일명
         }, 
+        # 'console': {
+        #     'class': 'logging.StreamHandler',
+        # },
     }, 
+    # 'root': {
+    #     'handlers': ['console'],
+    #     'level': 'DEBUG',
+    # },
     'loggers': { 
         'django': { 
             'handlers': ['file'], 
-            'level': log_level, #레벨
+            'level': LOG_LEVEL,
             'propagate': True, 
-        }, 
+        },
+        # 'django.core.cache.backends.redis': {
+        #     'handlers': ['console'],
+        #     'level': LOG_LEVEL,
+        #     'propagate': False,
+        # },
     }, 
 }
-
 
 
 # Internationalization
