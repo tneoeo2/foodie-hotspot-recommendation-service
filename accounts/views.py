@@ -23,8 +23,78 @@ class UserDetailsView(RetrieveUpdateAPIView):
     Returns UserModel fields.
     """
     serializer_class = UserDetailUpdateSerializers
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
+		
+    # JWT 인증방식 클래스 지정하기
+    authentication_classes = [JWTAuthentication]
+
+
     def get_object(self, request):
         token_str = request.headers.get("Authorization").split(' ')[1]
         data = jwt.decode(token_str, SECRET_KEY, ALGORITHM)
-        return data['user_id']
+        obj = get_object_or_404(User, id=data['user_id'])
+        return obj
+    
+
+
+
+class LocationListView(ListAPIView):  #캐싱 적용
+    permission_classes = [AllowAny]
+    # permission_classes = [IsAuthenticated]
+    
+    # queryset = Location.objects.all()
+    queryset = cache.get('locations')
+    if queryset is None:
+        queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+    
+    def get_queryset(self):
+        # queryset = Location.objects.all()
+        queryset = cache.get('locations')
+        if queryset is None:
+            queryset = Location.objects.all()
+            cache.set('locations', queryset)
+        query_params = self.request.query_params
+        if not query_params:
+            return queryset
+        
+        do_si = query_params.get("do_si", None)
+        if do_si:
+            queryset = queryset.filter(dosi=do_si)
+        
+        sgg = query_params.get("sgg", None)
+        if sgg:
+            queryset = queryset.filter(sgg=sgg)
+        
+        return queryset
+
+
+# class testAPI(APIView):
+#     permission_classes = [AllowAny]
+    
+#     def get(self, request):
+#         # location_load.load_to_db()
+        
+#         return Response({"message": "this is testAPI"})
+
+class testAPI(ListAPIView):    #캐싱 적용 안됨
+    permission_classes = [AllowAny]
+    
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+    
+    def get_queryset(self):
+        queryset = Location.objects.all()
+        query_params = self.request.query_params
+        if not query_params:
+            return queryset
+        
+        do_si = query_params.get("do_si", None)
+        if do_si:
+            queryset = queryset.filter(dosi=do_si)
+        
+        sgg = query_params.get("sgg", None)
+        if sgg:
+            queryset = queryset.filter(sgg=sgg)
+        
+        return queryset
