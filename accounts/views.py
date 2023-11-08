@@ -1,4 +1,6 @@
 import jwt
+import time
+import logging
 
 from django.conf import settings
 from django.core.cache import cache
@@ -19,6 +21,7 @@ from utils.location import location_load
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = 'HS256'
 
+logger = logging.getLogger(__name__)
 
 class UserDetailsView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -92,5 +95,17 @@ class testAPI(APIView):
     
     def get(self, request):
         # location_load.load_to_db()
+        start_time = time.time()
+        location = cache.get('location')
         
-        return Response({"message": "this is testAPI"})
+        ## 저장은 serializer.data 즉 문자열로 했는데... dict로 나옴
+        if location:
+            logger.info(f'time_check: {time.time()-start_time}')
+            return Response({"message": "this is testAPI", "data": location})
+        else:
+            serializer = LocationSerializers(Location.objects.get(id=1))
+            print("seri:", serializer.data)
+            print("seir type:", type(serializer.data))
+            location = cache.set('location', serializer.data, timeout=20)
+            logger.info(f'time_check: {time.time()-start_time}')
+            return Response({"message": "this is testAPI", "data": serializer.data})
