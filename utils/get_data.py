@@ -1,5 +1,6 @@
 import time
 import json
+import logging
 import requests
 import environ
 import xmltodict
@@ -7,7 +8,8 @@ from django.conf import settings
 # from custom_logger import CustomLogger
 
 # logger = CustomLogger("INFO").get_logger()  # 테스트용 추후변경
-logger = settings.CUSTOM_LOGGER
+# logger = settings.CUSTOM_LOGGER
+logger = logging.getLogger(__name__)
 
 env = environ.Env(DEBUG=(bool, True))
 
@@ -72,7 +74,6 @@ def get_restaurant(api_url, api_key, page_index:int, page_size:int)->dict:   # A
         jsondata = json.dumps(xmltodict.parse(root), indent=4)
         
         jsondict = json.loads(jsondata)
-        # logger.debug(f"jsondict: {jsondict}")
 
 
     return jsondict
@@ -167,5 +168,3 @@ def processing_data(page_index:int=1, page_size:int=500, total:int=None)->dict: 
 
     return new_data
 
-
-# processing_data()

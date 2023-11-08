@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from .models import User
 from django.shortcuts import get_object_or_404
 import requests
+import logging
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models.query import prefetch_related_objects
 from django.shortcuts import render
@@ -19,7 +20,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.serializers import UserDetailUpdateSerializers, LocationSerializers
 from accounts.models import Location
 from utils.location import location_load
-
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = 'HS256'

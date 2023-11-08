@@ -98,12 +98,9 @@ class FoodieDetailsSerializers(ModelSerializer):
 class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
     class Meta():
         model = Restaurant
-        fields = ['sgg', 'sgg_code', 'name', 'start_date', 'business_state', 'closed_date'
-                  ,'local_area', 'water_facility', 'male_employee_cnt', 'year', 'multi_used', 'multi_used'
-                  ,'grade_sep', 'total_area', 'female_employee_cnt', 'buisiness_site', 'sanitarity'
-                  ,'food_category', 'employee_cnt', 'address_lotno', 'address_roadnm', 'zip_code'
-                  ,'longitude', 'latitude']
-        # fields = '__all__'
+   
+        exclude = ['name_address','score']
+ 
     
     def set_name_address(self, validated_data):
         name = validated_data.get('name')
