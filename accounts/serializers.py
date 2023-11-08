@@ -7,7 +7,7 @@ from accounts.models import Location
 class UserDetailUpdateSerializers(serializers.ModelSerializer):
     class Meta():
         model = get_user_model()
-        fields = ['latitude', 'longitude', 'recommand_active']
+        fields = ['latitude', 'longitude', 'is_recommend']
         read_only_fields = ['user_name']
         
 

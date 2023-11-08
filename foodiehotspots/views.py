@@ -1,9 +1,13 @@
 import math
 import jwt
-from utils.get_data import processing_data
+import requests
+import json
+
 from config import settings
+from utils.get_data import processing_data
 
 from django.shortcuts import render, get_object_or_404
+
 from rest_framework import mixins, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,6 +16,7 @@ from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from accounts.models import User
 from foodiehotspots.models import Restaurant, Rate
 from foodiehotspots.serializers import RestaurantSerializer, RestaurantInfoUpdateSerializers, FoodieDetailsSerializers, EvalCreateSerializers
 
