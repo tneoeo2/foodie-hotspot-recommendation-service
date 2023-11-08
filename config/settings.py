@@ -7,7 +7,9 @@ from utils.custom_logger import CustomLogger
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, True))
-LOG_LEVEL = "DEBUG"
+
+LOG_LEVEL = 'INFO'
+
 logger = CustomLogger(level=LOG_LEVEL).get_logger()
 
 CUSTOM_LOGGER = logger
@@ -18,7 +20,6 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 SYSTEM_APPS = [
@@ -161,37 +162,36 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGGING = {    #Logging 기본 세팅 
-    'version': 1, 
-    'disable_existing_loggers': False, 
-    'handlers': { 
-        'file': { 
-            'level': 'DEBUG', 
-            'class': 'logging.FileHandler', 
-            'filename': 'debug.log',  #로그 파일명
-        }, 
-        # 'console': {
-        #     'class': 'logging.StreamHandler',
-        # },
-    }, 
-    # 'root': {
-    #     'handlers': ['console'],
-    #     'level': 'DEBUG',
-    # },
-    'loggers': { 
-        'django': { 
-            'handlers': ['file'], 
-            'level': LOG_LEVEL,
-            'propagate': True, 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,      #디폴트 : True, 장고의 디폴트 로그 설정을 대체. / False : 장고의 디폴트 로그 설정의 전부 또는 일부를 다시 정의
+    'formatters': {                        # message 출력 포맷 형식
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
-        # 'django.core.cache.backends.redis': {
-        #     'handlers': ['console'],
-        #     'level': LOG_LEVEL,
-        #     'propagate': False,
-        # },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': { 
+        'file': {
+            'level': 'INFO',  #출력 레벨 설정
+            'class': 'logging.FileHandler',  #파일 핸들러
+            'filename': os.path.join(BASE_DIR,'logs/foodie.log'),
+            'encoding': 'UTF-8',
+            'formatter': 'verbose',  # 포맷터 수정
+        },
+    },
+    'loggers': {
+        'django': { 
+                    'handlers': ['file'], 
+                    'level': LOG_LEVEL,  #레벨
+                    'propagate': True, 
+        }, 
     }, 
 }
-
 
 # Internationalization
 LANGUAGE_CODE = "ko-kr"
