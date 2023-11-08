@@ -15,18 +15,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Location',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('dosi', models.CharField(max_length=100)),
-                ('sgg', models.CharField(max_length=100)),
-                ('longitude', models.CharField(max_length=100)),
-                ('latitude', models.CharField(max_length=100)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-            ],
-        ),
-        migrations.CreateModel(
             name='User',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

@@ -10,4 +10,3 @@ class FoodiehotspotsConfig(AppConfig):
         if settings.SCHEDULER_DEFAULT:
             from foodiehotspots import tasks
             tasks.start()
-            tasks.schedule_process()

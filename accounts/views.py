@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from rest_framework.generics import RetrieveUpdateAPIView
+from django.shortcuts import render
 from django.core.cache import cache
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from django.conf import settings
@@ -51,9 +53,18 @@ class LocationListView(ListAPIView):  #캐싱 적용
     queryset = cache.get('locations')
     if queryset is None:
         queryset = Location.objects.all()
+    # queryset = Location.objects.all()
+    queryset = cache.get('locations')
+    if queryset is None:
+        queryset = Location.objects.all()
     serializer_class = LocationSerializers
     
     def get_queryset(self):
+        # queryset = Location.objects.all()
+        queryset = cache.get('locations')
+        if queryset is None:
+            queryset = Location.objects.all()
+            cache.set('locations', queryset)
         # queryset = Location.objects.all()
         queryset = cache.get('locations')
         if queryset is None:
@@ -76,12 +87,38 @@ class LocationListView(ListAPIView):  #캐싱 적용
 
 # class testAPI(APIView):
 #     permission_classes = [AllowAny]
+# class testAPI(APIView):
+#     permission_classes = [AllowAny]
     
+#     def get(self, request):
+#         # location_load.load_to_db()
 #     def get(self, request):
 #         # location_load.load_to_db()
         
 #         return Response({"message": "this is testAPI"})
+#         return Response({"message": "this is testAPI"})
 
+# class testAPI(ListAPIView):    #캐싱 적용 안됨
+#     permission_classes = [AllowAny]
+    
+#     queryset = Location.objects.all()
+#     serializer_class = LocationSerializers
+    
+#     def get_queryset(self):
+#         queryset = Location.objects.all()
+#         query_params = self.request.query_params
+#         if not query_params:
+#             return queryset
+        
+#         do_si = query_params.get("do_si", None)
+#         if do_si:
+#             queryset = queryset.filter(dosi=do_si)
+        
+#         sgg = query_params.get("sgg", None)
+#         if sgg:
+#             queryset = queryset.filter(sgg=sgg)
+        
+#         return queryset
 # class testAPI(ListAPIView):    #캐싱 적용 안됨
 #     permission_classes = [AllowAny]
     
