@@ -7,7 +7,9 @@ from utils.custom_logger import CustomLogger
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, True))
+
 LOG_LEVEL = 'INFO'
+
 logger = CustomLogger(level=LOG_LEVEL).get_logger()
 
 CUSTOM_LOGGER = logger
@@ -136,6 +138,23 @@ CACHES = {
     }
 }
 
+CACHE_TTL = 30  # Time to live
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        # 'BACKEND': 'django.core.cache.backends.cache.CacheClass',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis 서버 주소 및 포트
+        # 'OPTIONS': {
+        #     'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        # }
+    }
+}
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_CACHE_ALIAS = "default"
+
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -152,6 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,      #디폴트 : True, 장고의 디폴트 로그 설정을 대체. / False : 장고의 디폴트 로그 설정의 전부 또는 일부를 다시 정의
@@ -164,19 +184,19 @@ LOGGING = {
             'format': '%(levelname)s %(message)s'
         },
     },
-     'handlers': { 
-          'file': {
-            'level': 'INFO',    #출력 레벨 설정
-            'class': 'logging.FileHandler',    #파일 핸들러
+    'handlers': { 
+        'file': {
+            'level': 'INFO',  #출력 레벨 설정
+            'class': 'logging.FileHandler',  #파일 핸들러
             'filename': os.path.join(BASE_DIR,'logs/foodie.log'),
             'encoding': 'UTF-8',
-            'formatter': 'verbose',    # 포맷터 수정
+            'formatter': 'verbose',  # 포맷터 수정
         },
     },
     'loggers': {
         'django': { 
                     'handlers': ['file'], 
-                    'level': LOG_LEVEL, #레벨
+                    'level': LOG_LEVEL,  #레벨
                     'propagate': True, 
         }, 
     }, 
