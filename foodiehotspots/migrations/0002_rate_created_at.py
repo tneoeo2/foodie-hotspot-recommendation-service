@@ -10,11 +10,11 @@ class Migration(migrations.Migration):
         ('foodiehotspots', '0001_initial'),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name='rate',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
-            preserve_default=False,
-        ),
-    ]
+    # operations = [
+    #     migrations.AddField(
+    #         model_name='rate',
+    #         name='created_at',
+    #         field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+    #         preserve_default=False,
+    #     ),
+    # ]
