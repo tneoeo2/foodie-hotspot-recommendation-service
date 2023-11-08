@@ -3,7 +3,9 @@ import jwt
 from utils.get_data import processing_data
 from config import settings
 
-from django.shortcuts import render, get_object_or_404
+from django.core.cache import cache
+from django.shortcuts import get_object_or_404
+
 from rest_framework import mixins, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -109,23 +111,16 @@ def lat_lon_to_km(point_1, point_2):
     return R * c
 
 
-class FoodieDetailsView(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    GenericAPIView
-):
-    permission_classes = [IsAuthenticated]
+class FoodieDetailsView(mixins.RetrieveModelMixin, GenericAPIView):
     serializer_class = FoodieDetailsSerializers
-		
     # JWT 인증방식 클래스 지정하기
     authentication_classes = [JWTAuthentication]
+
     queryset = Restaurant.objects.all()
     
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
 
-        # Perform the lookup filtering.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
 
         assert lookup_url_kwarg in self.kwargs, (
@@ -142,11 +137,40 @@ class FoodieDetailsView(
     
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+    
+    def retrieve(self, request, *args, **kwargs):
+        '''
+        (issue #19) 1단계
+        - 600초 동안 호출되는 모든 데이터 다 캐싱
+        '''
+        cache_key = f'foodie_detail_{kwargs["pk"]}'  # 캐시 키 생성
 
-class EvalCreateView(
-    mixins.CreateModelMixin,
-    GenericAPIView
-):
+        # 캐시에서 데이터 가져오기
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            # 캐시에 데이터가 있을 경우, 캐싱된 데이터 반환
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        # 캐시에 데이터가 없는 경우 DB에서 데이터 조회
+        obj = self.get_object()
+        serializer = self.get_serializer(obj)
+        '''
+        (issue #19) 2단계
+        - 1단계를 만족하면서, 5개 이상의 평가가 존재하고 평점은 4.0 이상인 데이터만 600초 동안 캐싱
+        '''
+        # print(obj.score)
+        # print(type(obj.score))  # float
+        # print(obj.rates.count())
+        if obj.rates.count() >= 5 and obj.score >= 4.0 :
+            cache.set(cache_key, serializer.data, 600)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+class EvalCreateView(mixins.CreateModelMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = EvalCreateSerializers
 		
