@@ -1,13 +1,19 @@
+import time
 from functools import partial
+
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
+
 from django.db import models
-from apscheduler.triggers.cron import CronTrigger
-from foodiehotspots.schedulers import RestaurantScheduler   #, RestaurantCacheScheduler
+# from foodiehotspots.views import RestaurantScheduler
+from foodiehotspots.schedulers import RestaurantScheduler
+from foodiehotspots.scheduler import DiscordWebHooksScheduler
 import time
 
 
-scheduler = None #스케줄러 전역 변수로 설정
+scheduler1 = None
+scheduler2 = None
 
 def start():
     scheduler1 = BackgroundScheduler(timezone='Asia/Seoul')  # 시간대 설정
