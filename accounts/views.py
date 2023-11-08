@@ -77,24 +77,24 @@ class LocationListView(ListAPIView):  #캐싱 적용
         
 #         return Response({"message": "this is testAPI"})
 
-class testAPI(ListAPIView):    #캐싱 적용 안됨
-    permission_classes = [AllowAny]
+# class testAPI(ListAPIView):    #캐싱 적용 안됨
+#     permission_classes = [AllowAny]
     
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializers
+#     queryset = Location.objects.all()
+#     serializer_class = LocationSerializers
     
-    def get_queryset(self):
-        queryset = Location.objects.all()
-        query_params = self.request.query_params
-        if not query_params:
-            return queryset
+#     def get_queryset(self):
+#         queryset = Location.objects.all()
+#         query_params = self.request.query_params
+#         if not query_params:
+#             return queryset
         
-        do_si = query_params.get("do_si", None)
-        if do_si:
-            queryset = queryset.filter(dosi=do_si)
+#         do_si = query_params.get("do_si", None)
+#         if do_si:
+#             queryset = queryset.filter(dosi=do_si)
         
-        sgg = query_params.get("sgg", None)
-        if sgg:
-            queryset = queryset.filter(sgg=sgg)
+#         sgg = query_params.get("sgg", None)
+#         if sgg:
+#             queryset = queryset.filter(sgg=sgg)
         
-        return queryset
+#         return queryset
