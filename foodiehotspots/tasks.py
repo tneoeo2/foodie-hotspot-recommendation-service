@@ -9,11 +9,11 @@ from django.db import models
 # from foodiehotspots.views import RestaurantScheduler
 from foodiehotspots.schedulers import RestaurantScheduler
 from foodiehotspots.scheduler import DiscordWebHooksScheduler
+import time
 
 
 scheduler1 = None
 scheduler2 = None
-
 
 def start():
     scheduler1 = BackgroundScheduler(timezone='Asia/Seoul')  # 시간대 설정
@@ -23,9 +23,11 @@ def start():
     # 이전 스케줄이 완료될 때까지 대기할 시간(초) 설정
     wait_time = 1000
     job1 = partial(RestaurantScheduler.restaurant_scheduler, RestaurantScheduler())
-    
+    # job2 = partial(RestaurantCacheScheduler.set_foodhotspots, RestaurantCacheScheduler())
+    # scheduler.add_job(job2, 'cron', hour='3', misfire_grace_time=wait_time)  # 2시 실행(default)
+    # scheduler.add_job(job2, 'cron', second='*/20', misfire_grace_time=wait_time)  # 2시 실행(default)
+    # scheduler.add_job(job1, 'cron', minute='*',misfire_grace_time=wait_time) #!매분 실행으로 테스트
     scheduler1.add_job(job1, 'cron', hour=2, misfire_grace_time=wait_time)  # 2시 실행(default)
-    
     # scheduler1.add_job(job1, 'cron', minute='*',misfire_grace_time=wait_time) #!매분 실행으로 테스트
     scheduler1.start()
 

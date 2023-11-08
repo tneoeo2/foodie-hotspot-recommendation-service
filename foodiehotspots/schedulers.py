@@ -1,16 +1,18 @@
 from django.shortcuts import render
 from django.db.utils import IntegrityError
 from django.conf import settings
-from .models import Restaurant
+from .models import Restaurant, Rate
+from django.db.models import Count
 from utils.get_data import processing_data
 import logging
 from rest_framework import status
+from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from  .serializers import RestaurantInfoUpdateSerializers
+from  .serializers import RestaurantInfoUpdateSerializers, RestaurantSerializer
 
-# logger = settings.CUSTOM_LOGGER
-logger = logging.getLogger(__name__)
+logger = settings.CUSTOM_LOGGER
+# logger = logging.getLogger(__name__)
 
 
 class RestaurantScheduler:
@@ -68,4 +70,48 @@ class RestaurantScheduler:
                             new = serializer.validated_data.get('name')
                             logger.debug(f'신규데이터 추가--- {new}')
                             serializer.save()
-                            
+
+
+# class RestaurantCacheScheduler:
+#     serializer_class = RestaurantSerializer
+    
+    
+#     def get_rate_info(self, cnt):
+#         '''
+#         param: cnt 가져올 데이터의 수량 설정
+#         '''
+#         foodhotspots = 0
+#         # Restaurant별 평가 수 구하기
+#         rate_cnt = Rate.objects.annotate(rate_cnt=Count('restaurant'))
+#         for item in rate_cnt:
+#             logger.debug(f"Rate Count: {item.rate_cnt}")
+#         # 가장 많은 평가를 받은 Restaurant 가져오기
+#         top_rated_restaurants = rate_cnt.order_by('-rate_cnt')[:cnt]
+
+#         # 가장 많은 평가를 받은 Restaurant의 ID를 사용하여 Rate 가져오기
+#         foodhotspots = []
+#         if top_rated_restaurants:  
+#             for restaurant in list(top_rated_restaurants):
+#                 restaurant_id = restaurant.restaurant_id
+#                 foodhotspots.append(Restaurant.objects.get(id=restaurant_id))
+                
+#             # logger.debug(f"foodhotspots: {foodhotspots[0].name}")
+#             return foodhotspots
+#         return foodhotspots    
+    
+    
+#     def set_foodhotspots(self):
+#         logger.info("-----맛집순위 캐싱-----")
+#         cnt = 100
+#         foodhotspots = self.get_rate_info(cnt)
+        
+#         if foodhotspots !=  0: # 반환값 있을 때만 캐싱 진행
+#             cached_data = cache.get('foodhotspots')
+        
+#             if cached_data is None:
+#                 logger.info("-----기존 데이터 없음----")
+#                 # cache.set('foodhotspots_encode', foodhotspots.encode("utf-8"))  # 데이터 인코딩 테스트(안되는듯?)
+#                 cache.set('foodhotspots', foodhotspots)  
+#                 logger.info(f'score 상위 식당 {cnt}개 캐싱 완료')
+            
+#                 return foodhotspots 

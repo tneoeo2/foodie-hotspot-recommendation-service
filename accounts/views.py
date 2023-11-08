@@ -1,8 +1,10 @@
 import jwt
 
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models.query import prefetch_related_objects
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -55,20 +57,27 @@ class UserDetailsView(RetrieveUpdateAPIView):
         return Response(serializer.data)
 
 
-class LocationListView(ListAPIView):
+class LocationListView(ListAPIView):  #캐싱 적용
     permission_classes = [AllowAny]
     # permission_classes = [IsAuthenticated]
-
+    
+    # queryset = Location.objects.all()
+    queryset = cache.get('locations')
+    if queryset is None:
+        queryset = Location.objects.all()
     serializer_class = LocationSerializers
     
     def get_queryset(self):
-
-        queryset = Location.objects.all()
+        # queryset = Location.objects.all()
+        queryset = cache.get('locations')
+        if queryset is None:
+            queryset = Location.objects.all()
+            cache.set('locations', queryset)
         query_params = self.request.query_params
         if not query_params:
             return queryset
         
-        do_si = query_params.get("dosi", None)
+        do_si = query_params.get("do_si", None)
         if do_si:
             queryset = queryset.filter(dosi=do_si)
         

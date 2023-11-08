@@ -1,4 +1,3 @@
-
 import jwt
 from config import settings
 
@@ -11,6 +10,7 @@ from foodiehotspots.models import Restaurant, Rate
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = 'HS256'
+from foodiehotspots.models import Restaurant
 
 logger = settings.CUSTOM_LOGGER
 
@@ -24,7 +24,7 @@ class RestaurantSerializer(ModelSerializer):
             'latitude', 
             'score'
         )
-    
+
     def validate_score(self, value):
         if value < 0 or value > 5:
             raise serializers.ValidationError("평점(score)은 0에서 5 사이어야 합니다.")
@@ -32,20 +32,20 @@ class RestaurantSerializer(ModelSerializer):
 
 
 class EvalCreateSerializers(ModelSerializer):
-    
+
     eval_ids = SerializerMethodField()
     avg_score = SerializerMethodField()
-    
+
     def get_eval_ids(self, obj):
         # 해당 식당의 평가 내역을 조회 할 수 있도록 (최신 순으로)
         evals = Rate.objects.filter(restaurant=self.context['view'].kwargs['pk']).order_by('-created_at')
         #value_list를 사용하면 object에서 지정해준 field값을 tuple형태로 return 해줍니다.
         evals_ids = evals.values_list('score','content','created_at')
         return evals_ids
-    
+
     def get_avg_score(self, obj):
         return get_object_or_404(Restaurant, id=self.context['view'].kwargs['pk']).score
-    
+
     #create함수는 modelSerializer에서 Model에 validate_data를 저장하기 위해 생성된 함수
     def create(self, validated_data):
         # 현재 요청을 보내는 사용자(user_id)를 추출
@@ -76,13 +76,13 @@ class EvalCreateSerializers(ModelSerializer):
             'score': {'write_only': True},
             'content': {'write_only': True}
         }
-        
-        
+
+
 class FoodieDetailsSerializers(ModelSerializer):
 
     related_eval_ids = SerializerMethodField()
-    
-    
+
+
     def get_related_eval_ids(self, obj):
         # 해당 company_id로 지원한 지원공고인 recruit_id를 리스트로 반환
         # 해당 식당 평가 내역을 생성시간 역순(최신순) 으로 반환합니다.
@@ -90,11 +90,12 @@ class FoodieDetailsSerializers(ModelSerializer):
         #value_list를 사용하면 object에서 지정해준 field값을 tuple형태로 return 해줍니다.
         evals_ids = related_evals.values_list('score','content','created_at')
         return evals_ids
-    
+
     class Meta:
         model = Restaurant
         fields = '__all__'
-        
+
+
 class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
     class Meta():
         model = Restaurant
@@ -119,7 +120,9 @@ class RestaurantInfoUpdateSerializers(serializers.ModelSerializer):
         self.set_name_address(validated_data)
         restaurant = Restaurant(**validated_data)
         restaurant.save()
-
+        # restaurant, created = Restaurant.objects.get_or_create(name_address=validated_data['name_address'], defaults=validated_data)
+        # logger.info(f'created : {created}')   #false면 기존에 있던데이터
+        
         return restaurant
     
     def update(self, instance, validated_data):

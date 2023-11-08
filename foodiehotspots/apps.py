@@ -11,4 +11,4 @@ class FoodiehotspotsConfig(AppConfig):
             if settings.SCHEDULER_DEFAULT:
                 from foodiehotspots import tasks
                 tasks.start()
-                tasks.schedule_process()
+                # tasks.schedule_process()  # migation 할때 에러나서 일단 주석처리

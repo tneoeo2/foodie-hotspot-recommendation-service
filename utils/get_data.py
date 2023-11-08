@@ -74,7 +74,8 @@ def get_restaurant(api_url, api_key, page_index:int, page_size:int)->dict:   # A
         jsondata = json.dumps(xmltodict.parse(root), indent=4)
         
         jsondict = json.loads(jsondata)
-
+        # logger.debug(f"jsondict: {jsondict}")
+        
 
     return jsondict
 
@@ -88,7 +89,6 @@ def get_mapping_data(raw_data:dict, field:dict) -> dict:
     result_list = []
     result_dict = {}
     # logger.debug(f'raw_data : {raw_data}')
-
     if type(raw_data) != list:
         # tmp = copy.deepcopy(result_dict)
         tmp = result_dict.copy()
@@ -168,3 +168,5 @@ def processing_data(page_index:int=1, page_size:int=500, total:int=None)->dict: 
 
     return new_data
 
+
+# processing_data()

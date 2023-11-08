@@ -30,9 +30,9 @@ class Restaurant(models.Model):
     zip_code = models.CharField(max_length=100, null=True, blank=True) # 우편번호
     longitude = models.CharField(max_length=100) # 경도
     latitude = models.CharField(max_length=100) # 위도
-    
+
     name_address = models.CharField(max_length=255, unique=True) # name + address_roadnm
-    score = models.FloatField(default=0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])  # 평균 점수
+    score = models.FloatField(default=0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])# 평가점수
     
     def save(self, *args, **kwagrs):
         if self.name_address:
@@ -42,7 +42,7 @@ class Restaurant(models.Model):
     
     def get_unique_field(self):
         return self.name_address
-        
+
 
 class Rate(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
